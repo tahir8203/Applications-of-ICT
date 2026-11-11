@@ -4,7 +4,10 @@ An animated, projector-ready course website for **Applications of Information an
 
 Instructor: Muhammad Tahir Mehmood
 
-Static site, no build step. Open `index.html` directly or serve the folder (deployed on Vercel).
+Static site, no build step. Open `index.html` directly or serve the folder.
+
+Repository: https://github.com/tahir8203/Applications-of-ICT  
+Hosting: Vercel project `applications-of-ict` (every push to `main` deploys to production).
 
 ## What's inside
 

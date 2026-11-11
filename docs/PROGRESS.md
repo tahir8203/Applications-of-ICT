@@ -17,7 +17,8 @@ Status as of 2026-11-11.
 | Instructor profile card + badge on lectures | ✅ | ✅ |
 | Responsive layout (desktop, 1600×900 projector, 375px phone) | ✅ | ✅ no horizontal overflow at 375px |
 | Flashcards, glossary, search, bookmarks, progress, revision dashboard | ✅ | ✅ pages render |
-| GitHub + Vercel deployment | see README / final report | |
+| GitHub repo (github.com/tahir8203/Applications-of-ICT) | ✅ | ✅ pushed to main |
+| Vercel deployment (project applications-of-ict, auto-deploys on push to main) | ✅ | ✅ live site checked after deploy |
 
 Notes
 - 950 slides in total across 32 units (auto-generated objectives, activity, summary and quiz slides included).
