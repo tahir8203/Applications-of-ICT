@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Applications of ICT · ICT-1013</title>
+<meta name="description" content="Animated, projector-ready course website for Applications of Information and Communication Technologies (ICT-1013), BS Psychology — 32 sessions with slides, animations, quizzes and flashcards.">
+<meta name="theme-color" content="#070b16">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%233b82f6'/><stop offset='1' stop-color='%2322d3ee'/></linearGradient></defs><rect width='64' height='64' rx='16' fill='url(%23g)'/><text x='32' y='41' font-family='Arial' font-weight='700' font-size='22' text-anchor='middle' fill='white'>ICT</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="#/"><span class="logo">ICT</span><span>Applications of ICT<small>ICT-1013 · BS PSYCHOLOGY</small></span></a>
+  <button class="iconbtn menubtn" id="menuBtn" aria-label="Menu">☰</button>
+  <nav class="nav" id="nav" aria-label="Main">
+    <a href="#/">Home</a><a href="#/sessions">Sessions</a><a href="#/assess">Assessments</a><a href="#/revision">Revision</a><a href="#/flash">Flashcards</a><a href="#/glossary">Glossary</a><a href="#/outline">Outline</a><a href="#/bookmarks">Progress</a>
+  </nav>
+  <button class="iconbtn" id="themeBtn" aria-label="Toggle light or dark theme">☀️</button>
+</div></header>
+<main id="app" tabindex="-1"></main>
+<footer><div class="wrap">Applications of Information &amp; Communication Technologies (ICT-1013) · Instructor: Muhammad Tahir Mehmood · Educational use. Product names belong to their owners and are mentioned for teaching only.</div></footer>
+<noscript><p style="padding:20px">This course needs JavaScript enabled.</p></noscript>
+<script>
+window.COURSE = {
+  sessions: [],
+  intro: "This course is designed to provide students with an exploration of the practical applications of Information and Communication Technologies (ICT) and software tools in various domains.",
+  objectives: [
+    "Gain hands-on experience with a range of software applications, learning how to leverage ICT to solve daily-life problems, enhance productivity and innovate in different fields.",
+    "Through individual and interactive exercises and discussions, develop proficiency in using software for communication, creativity and more."
+  ],
+  outcomes: [
+    "Explain the fundamental concepts, components, and scope of Information and Communication Technologies (ICT).",
+    "Identify uses of various ICT platforms and tools for different purposes.",
+    "Apply ICT platforms and tools for different purposes to address basic needs in different domains of daily, academic, and professional life.",
+    "Understand the ethical and legal considerations in use of ICT platforms and tools."
+  ],
+  books: ["Discovering Computers — Vermaat, Shaffer & Freund", "GO! with Microsoft Office series — Gaskin, Vargas & McLellan", "Exploring Microsoft Office series — Grauer & Poatsy"],
+  refs: ["Computing Essentials — Morley & Parker", "Technology in Action — Evans, Martin & Poatsy"],
+  policies: ["Class attendance is mandatory. You may miss up to 6 sessions; on the 7th absence you will be withdrawn from the course.", "Each class lasts 90 minutes — arrive on time and be in your seat.", "Cell phones should be powered off (unless the activity needs them).", "Eatables are not allowed in class.", "Disruptive behaviour is not tolerated.", "The dress code must be observed."]
+};
+</script>
+<script src="assets/sessions/part1.js"></script>
+<script src="assets/sessions/part2.js"></script>
+<script src="assets/sessions/part3.js"></script>
+<script src="assets/sessions/part4.js"></script>
+<script src="assets/demos.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
