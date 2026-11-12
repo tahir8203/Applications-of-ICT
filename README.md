@@ -18,6 +18,10 @@ Hosting: Vercel project `applications-of-ict` (every push to `main` deploys to p
 - **Watch mode:** plays any lecture like an animated video. Slides auto-advance, animations auto-play and quiz answers reveal on their own.
 - Revision dashboard, flashcards, glossary, search, bookmarks, progress tracking (localStorage), light/dark theme and print handouts.
 
+## Android app
+
+Offline Android app with the full course: **[Download ICT-1013.apk](https://github.com/tahir8203/Applications-of-ICT/releases/latest/download/ICT-1013.apk)** (Android 7.0+). Source and build steps are in [`android/`](android/README.md).
+
 ## Presentation mode (classroom projector)
 
 One screen = one concept. Open from any session (**Present** / **Watch**) or the URL `#/p/<session>/<slide>`. Use `#/w/<session>` to start in Watch mode.
@@ -49,6 +53,7 @@ assets/sessions/part1-4.js Course content as data (sessions, slides, quizzes, as
 assets/instructor.webp     Instructor photo
 docs/MASTER-PROMPT.md      Refined project brief
 docs/PROGRESS.md           Progress checklist
+android/                   Android app (offline WebView shell) and build script
 ```
 
 To add or edit a session, change the data in `assets/sessions/*.js`. No UI code changes are needed.

@@ -19,6 +19,7 @@ Status as of 2026-11-11.
 | Flashcards, glossary, search, bookmarks, progress, revision dashboard | ✅ | ✅ pages render |
 | GitHub repo (github.com/tahir8203/Applications-of-ICT) | ✅ | ✅ pushed to main |
 | Vercel deployment (project applications-of-ict, auto-deploys on push to main) | ✅ | ✅ live site checked after deploy |
+| Android app (signed APK v1.0.0, offline, back button, fullscreen, print to PDF) | ✅ | ⚠️ bundled site tested at phone size; not yet run on a real phone or emulator |
 
 Notes
 - 950 slides in total across 32 units (auto-generated objectives, activity, summary and quiz slides included).

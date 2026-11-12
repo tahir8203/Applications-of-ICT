@@ -4,6 +4,9 @@ const C = window.COURSE;
 const S = C.sessions.sort((a,b)=>a.week-b.week || a.id-b.id);
 const $ = (q,r=document)=>r.querySelector(q), $$=(q,r=document)=>[...r.querySelectorAll(q)];
 const app = $('#app');
+const IS_APP = /ICT1013App/.test(navigator.userAgent);
+if(IS_APP) document.documentElement.classList.add('in-app');
+const APK_URL = 'https://github.com/tahir8203/Applications-of-ICT/releases/latest/download/ICT-1013.apk';
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const strip = s => String(s||'').replace(/<[^>]+>/g,'');
 
@@ -102,7 +105,7 @@ function home(){
     <h1>Applications of <span>Information &amp; Communication</span> Technologies</h1>
     <p class="lead">An animated, projector-ready course: 30 teaching sessions plus midterm and final exam preparation — from computer basics to productivity tools, ICT in education, health and finance, digital citizenship and ethics.</p>
     <div class="meta"><span class="chip">📅 16 weeks + final exam</span><span class="chip">🧑‍🏫 90-minute sessions</span><span class="chip">🎬 ${Object.keys(window.ICTDemos.list).length} animations</span><span class="chip">📝 4 quizzes · 4 assignments · project</span></div>
-    <div class="cta"><a class="btn pri" href="#/sessions">Open sessions →</a><a class="btn watch" href="#/w/1">▶ Watch Session 1</a><a class="btn" href="#/p/1/1">🖥 Present</a><a class="btn" href="#/assess">Assessments</a></div>
+    <div class="cta"><a class="btn pri" href="#/sessions">Open sessions →</a><a class="btn watch" href="#/w/1">▶ Watch Session 1</a><a class="btn" href="#/p/1/1">🖥 Present</a><a class="btn" href="#/assess">Assessments</a>${IS_APP?'':`<a class="btn" href="${APK_URL}">📱 Android app</a>`}</div>
   </div>
   <div class="orbit" aria-hidden="true"><div class="ring">${['💻','🌐','☁️','📧','📊','🩺','💳','🛡️'].map((e,k)=>{const a=k/8*2*Math.PI; return `<i style="left:${50+50*Math.cos(a)}%;top:${50+50*Math.sin(a)}%">${e}</i>`}).join('')}</div><div class="core">ICT</div></div>
   </div></section>
