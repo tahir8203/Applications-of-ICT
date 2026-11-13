@@ -1,6 +1,6 @@
 # Progress checklist — ICT-1013
 
-Status as of 2026-11-11.
+Status as of 2026-11-13 (portal version 2.0).
 
 | Item | Built | Tested |
 |---|---|---|
@@ -20,8 +20,14 @@ Status as of 2026-11-11.
 | GitHub repo (github.com/tahir8203/Applications-of-ICT) | ✅ | ✅ pushed to main |
 | Vercel deployment (project applications-of-ict, auto-deploys on push to main) | ✅ | ✅ live site checked after deploy |
 | Android app (signed APK v1.0.0, offline, back button, fullscreen, print to PDF) | ✅ | ⚠️ bundled site tested at phone size; not yet run on a real phone or emulator |
+| Portal 2.0: dashboard, app shell with tab bar, XP, streaks, badges, notes, global search | ✅ | ✅ every page opened at phone and desktop size, no errors, no horizontal overflow |
+| Practice centre: quick quiz, timed mocks, phishing spotter, shortcut trainer, formula challenge, term match | ✅ | ✅ each game played through in the browser |
+| Web journey visualizer, 7 lab tools, 19 cheat sheets, 26 viva answers, ICT today, help steps | ✅ | ✅ outputs checked (APA, statistics, password, binary, email) |
+| Bloom's Taxonomy outcomes for Sessions 1–30 | ✅ | ✅ shown on study pages and as slides (deck now 980 slides) |
+| Installable web app (manifest + service worker) | ✅ | ⚠️ service worker only runs on the live https site; check "Install" once there |
+| Android app 2.0.0 (splash, haptics, theme-matched bars, share, rotate, smart back) | ✅ | ⚠️ built, signed and inspected; not yet run on a real phone |
 
 Notes
-- 950 slides in total across 32 units (auto-generated objectives, activity, summary and quiz slides included).
+- 980 slides in total across 32 units (auto-generated objectives, activity, summary and quiz slides included).
 - Product facts that change often (free storage sizes, wallet brands, platform features) are flagged for the instructor to confirm before class.
 - No official marks or grading weightage are invented anywhere.

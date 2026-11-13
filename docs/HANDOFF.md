@@ -1,6 +1,6 @@
 # ICT-1013 — Complete handoff (web portal + Android app)
 
-Last updated: 12 Nov 2026. Give this file to a new Claude chat and say: "Read D:\Fall 2026\ICT\HANDOFF.md first, then continue."
+Last updated: 13 Nov 2026 (see section 11 for the Portal 2.0 update). Give this file to a new Claude chat and say: "Read D:\Fall 2026\ICT\HANDOFF.md first, then continue."
 
 Course: **Applications of Information and Communication Technologies (ICT-1013)**, BS Psychology, 3 credit hours, 16 weeks + Final (Week 17).
 Instructor: Muhammad Tahir Mehmood. Course outline source: `D:\Fall 2026\ICT\Applications of Information and Communication technologies.doc`.
@@ -23,7 +23,7 @@ Instructor: Muhammad Tahir Mehmood. Course outline source: `D:\Fall 2026\ICT\App
 ```
 D:\Fall 2026\ICT\
   HANDOFF.md                     <- this file
-  ICT-1013_v1.0.0.apk            <- copy of the signed APK
+  ICT-1013_v2.0.0.apk            <- copy of the signed APK (v1.0.0 kept beside it)
   Applications of ...doc         <- official course outline
   ict\                           <- the git repo (website + android app)
     index.html                   shell + window.COURSE metadata (outline, LO1-LO4, books, policies)
@@ -79,7 +79,7 @@ Then open http://localhost:5173. (Or open `index.html` directly.) In Claude Code
 
 ## 6. Android app
 
-- Package **`pk.edu.ict1013`** (never change it), version **1.0.0 / versionCode 1**, minSdk 24 (Android 7.0), targetSdk/compileSdk 36. Size ≈ 0.3 MB.
+- Package **`pk.edu.ict1013`** (never change it), version **2.0.0 / versionCode 2**, minSdk 24 (Android 7.0), targetSdk/compileSdk 36. Size ≈ 0.3 MB.
 - Plain Java WebView app (no libraries): `android/app/src/main/java/pk/edu/ict1013/MainActivity.java`.
   - Serves the bundled site from `https://appassets.androidplatform.net/www/index.html` (assets), so localStorage progress works offline.
   - Back button walks back through pages/slides, then exits (predictive back on Android 13+).
@@ -127,3 +127,19 @@ Verify: `apksigner verify --print-certs` and `aapt2 dump badging` from `C:\dev\a
 
 - Mobile Application Development: https://mobile-application-development-five.vercel.app · repo tahir8203/Mobile-Application-Development (its own Android app, package `com.mtahir.madcourse`, built with tools in `D:\MADBuildTools`).
 - Compiler Construction: https://compiler-construction-phi.vercel.app · repo tahir8203/Compiler-Construction (folder `D:\Fall 2026\Compiler`).
+
+---
+
+## 11. Portal 2.0 update (13 Nov 2026)
+
+Modelled on the Compiler Construction portal (same code base). What changed:
+
+- **New files:** `assets/portal.js`, `assets/portal.css`, `assets/portal-data.js`, `assets/tools.js`, `assets/sessions/bloom.js`, `manifest.webmanifest`, `sw.js`, `assets/icons/`.
+- **`assets/app.js`** now exposes `window.ICTApp` (deck, sessions, st, save, sess, label, short, pct, mcqBlock, wireChoices, route…) and calls hooks on `window.ICTPortal` (`routes`, `afterRoute`, `onDone`, `onQuiz`, `onAssess`, `onPres`, `reset`). Sessions may carry `bloom:{head,heart,hand}`; slides may carry `code`. Slides auto-shrink to fit the screen (`fitSlide`).
+- **Routes added:** `#/practice` (+ `/quick /mid /final /phish /keys /xl /match`), `#/journey`, `#/tools`, `#/sheets` (+ `/viva /today /toolbox`), `#/me`. Home `#/` is the student dashboard.
+- **Storage:** course progress `ict1013-v2` (unchanged), portal data `ict-portal-v1` (name, roll, semester start, XP, streak days, notes, best scores, counters).
+- **Cache busting:** all assets load with `?v=20`; `sw.js` has `VERSION='ict-v20'`. After editing any asset, raise both numbers together.
+- **Content rules kept:** every message, bank, shop and person in the practice banks is fictional (reserved `.example` domains, documentation IP range 203.0.113.x); no official marks; health and AI notes say tools do not replace professionals; no helpline numbers are stated (students are told to use the official number on their card or app).
+- **Android 2.0.0 (versionCode 2):** same package and signing key. Bridge `window.AndroidApp`: `print, isApp, haptic, setTheme, keepAwake, orient, share`. Splash = `res/drawable/splash.xml` + `drawable-nodpi/splash_logo.png`. Release tag `v2.0.0`.
+- Totals now: 32 units, **980 deck slides**, 80 animations, 19 cheat sheets, 26 viva answers, 14 phishing messages, 26 shortcuts, 7 lab tools.
+- Still to do: run the APK on a real phone; check "Install app" on the live site; confirm flagged product facts before class.
