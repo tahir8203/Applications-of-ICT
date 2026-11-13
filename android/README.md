@@ -14,6 +14,15 @@ A native Android app (package `pk.edu.ict1013`) that carries the whole course in
 - The screen stays on while the app is open (useful in Watch mode).
 - Web links open in the phone's browser. Fonts load from Google Fonts when online and fall back to system fonts offline.
 
+## Version 2.0.0 additions
+
+- Splash screen, then the portal dashboard with a bottom tab bar.
+- Vibration feedback on taps and answers (`VIBRATE` permission).
+- Status and navigation bar areas follow the light or dark theme.
+- Back closes a sheet, the slide overview or the presentation first, then steps back, and exits from Home.
+- Screen stays on only while a presentation is open; a rotate button locks slides to landscape.
+- Native share sheet for the portal link.
+
 ## Build
 
 Needs JDK 17+ and the Android SDK (platform 36). The signing key is kept **outside** the repository:

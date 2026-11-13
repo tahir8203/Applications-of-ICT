@@ -4,17 +4,19 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintManager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
@@ -69,12 +71,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle state) {
         super.onCreate(state);
-        Window w = getWindow();
-        w.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON); // lectures and Watch mode should not dim mid-class
-
         root = new FrameLayout(this);
-        root.setBackgroundColor(Color.parseColor("#0B1B3A"));
         web = new WebView(this);
+        web.setVisibility(View.INVISIBLE); // the splash (window background) shows until the first page is ready
         root.addView(web, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         setContentView(root);
 
@@ -100,7 +99,8 @@ public class MainActivity extends Activity {
         s.setAllowFileAccess(false);
         s.setAllowContentAccess(false);
         s.setUserAgentString(s.getUserAgentString() + " ICT1013App/" + appVersion());
-        web.setBackgroundColor(Color.parseColor("#F4F7FC"));
+        s.setTextZoom(100);
+        web.setBackgroundColor(Color.parseColor("#070b16"));
         web.addJavascriptInterface(new Bridge(), "AndroidApp");
 
         web.setWebViewClient(new WebViewClient() {
@@ -136,6 +136,10 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPageFinished(WebView view, String url) {
+                if (web.getVisibility() != View.VISIBLE) {
+                    web.setVisibility(View.VISIBLE);
+                    if (!barsSet) applyBars(false);
+                }
                 // window.print() does nothing inside a WebView: route it to Android's print / Save as PDF.
                 view.evaluateJavascript("window.print=function(){AndroidApp.print(document.title)};", null);
             }
@@ -157,10 +161,48 @@ public class MainActivity extends Activity {
         else web.loadUrl(START);
     }
 
+    /** Back closes a sheet, the slide overview or the presentation first, then steps back through pages, then exits. */
     private void handleBack() {
-        if (fullView != null) { exitFull(); return; }
-        if (web.canGoBack()) web.goBack();
-        else finish();
+        if (fullView != null) {
+            web.evaluateJavascript("document.exitFullscreen&&document.exitFullscreen().catch(function(){})", null);
+            return;
+        }
+        web.evaluateJavascript(
+                "(function(){var w=document.querySelector('.sheetw');if(w){w.click();return 'ov';}var p=document.getElementById('pres');if(p){"
+                        + "var o=document.getElementById('pov');if(o&&o.classList.contains('show')){o.classList.remove('show');return 'ov';}"
+                        + "document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));return 'pres';}"
+                        + "return (location.hash===''||location.hash==='#/')?'home':'page';})()",
+                value -> {
+                    if (value == null) value = "";
+                    if (value.contains("pres") || value.contains("ov")) return;
+                    if (value.contains("home")) { finish(); return; }
+                    if (web.canGoBack()) web.goBack();
+                    else web.loadUrl(START);
+                });
+    }
+
+    private boolean barsSet = false;
+
+    /** Colour the areas behind the status and navigation bars to match the portal's light or dark theme. */
+    @SuppressWarnings("deprecation")
+    private void applyBars(boolean light) {
+        barsSet = true;
+        int c = Color.parseColor(light ? "#f4f7fd" : "#070b16");
+        root.setBackgroundColor(c);
+        getWindow().setStatusBarColor(c);
+        getWindow().setNavigationBarColor(c);
+        if (Build.VERSION.SDK_INT >= 30) {
+            WindowInsetsController ic = getWindow().getInsetsController();
+            if (ic != null) {
+                int m = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS | WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+                ic.setSystemBarsAppearance(light ? m : 0, m);
+            }
+        } else {
+            View d = getWindow().getDecorView();
+            int f = d.getSystemUiVisibility();
+            int lf = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | (Build.VERSION.SDK_INT >= 26 ? View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR : 0);
+            d.setSystemUiVisibility(light ? (f | lf) : (f & ~lf));
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -233,15 +275,64 @@ public class MainActivity extends Activity {
         super.onDestroy();
     }
 
-    /** Small bridge for things a WebView cannot do on its own. */
+    /** Bridge for things a WebView cannot do on its own. Called from the portal as window.AndroidApp. */
     private class Bridge {
         @JavascriptInterface
         public void print(String title) {
             runOnUiThread(() -> {
                 PrintManager pm = (PrintManager) getSystemService(PRINT_SERVICE);
+                if (pm == null) return;
                 String name = (title == null || title.isEmpty()) ? "ICT-1013 handout" : title;
                 PrintDocumentAdapter a = web.createPrintDocumentAdapter(name);
                 pm.print(name, a, new PrintAttributes.Builder().setMediaSize(PrintAttributes.MediaSize.ISO_A4).build());
+            });
+        }
+
+        @JavascriptInterface
+        public boolean isApp() { return true; }
+
+        /** Short vibration for taps and for right and wrong answers. */
+        @JavascriptInterface
+        @SuppressWarnings("deprecation")
+        public void haptic(final int ms) {
+            try {
+                Vibrator v = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                if (v == null || !v.hasVibrator()) return;
+                int d = Math.max(5, Math.min(ms, 60));
+                if (Build.VERSION.SDK_INT >= 26) v.vibrate(VibrationEffect.createOneShot(d, VibrationEffect.DEFAULT_AMPLITUDE));
+                else v.vibrate(d);
+            } catch (Exception ignored) { }
+        }
+
+        @JavascriptInterface
+        public void setTheme(final boolean light) { runOnUiThread(() -> applyBars(light)); }
+
+        /** Keep the screen on while a presentation or Watch mode is open. */
+        @JavascriptInterface
+        public void keepAwake(final boolean on) {
+            runOnUiThread(() -> {
+                if (on) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            });
+        }
+
+        /** "landscape" locks slides to landscape; anything else returns to automatic rotation. */
+        @JavascriptInterface
+        public void orient(final String mode) {
+            runOnUiThread(() -> setRequestedOrientation("landscape".equals(mode)
+                    ? ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+                    : ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED));
+        }
+
+        @JavascriptInterface
+        public void share(final String text) {
+            runOnUiThread(() -> {
+                try {
+                    Intent i = new Intent(Intent.ACTION_SEND);
+                    i.setType("text/plain");
+                    i.putExtra(Intent.EXTRA_TEXT, text);
+                    startActivity(Intent.createChooser(i, "Share"));
+                } catch (Exception ignored) { }
             });
         }
     }

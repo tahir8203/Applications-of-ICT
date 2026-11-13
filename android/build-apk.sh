@@ -5,7 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")"
 WWW=app/src/main/assets/www
 rm -rf "$WWW" && mkdir -p "$WWW"
-cp ../index.html "$WWW/"
+cp ../index.html ../manifest.webmanifest "$WWW/"
 cp -r ../assets "$WWW/"
 VER=$(grep -o 'versionName = "[^"]*"' app/build.gradle.kts | cut -d'"' -f2)
 ./gradlew --no-daemon -q assembleRelease

@@ -4,9 +4,6 @@ const C = window.COURSE;
 const S = C.sessions.sort((a,b)=>a.week-b.week || a.id-b.id);
 const $ = (q,r=document)=>r.querySelector(q), $$=(q,r=document)=>[...r.querySelectorAll(q)];
 const app = $('#app');
-const IS_APP = /ICT1013App/.test(navigator.userAgent);
-if(IS_APP) document.documentElement.classList.add('in-app');
-const APK_URL = 'https://github.com/tahir8203/Applications-of-ICT/releases/latest/download/ICT-1013.apk';
 const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const strip = s => String(s||'').replace(/<[^>]+>/g,'');
 
@@ -18,12 +15,12 @@ try{ st = Object.assign(st, JSON.parse(localStorage.getItem(KEY)||'{}')); }catch
 const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} };
 
 /* ---------- theme ---------- */
-function setTheme(t){ document.documentElement.dataset.theme=t; try{localStorage.setItem('ict-theme',t);}catch(e){} $('#themeBtn').textContent = t==='light'?'🌙':'☀️'; }
+function setTheme(t){ document.documentElement.dataset.theme=t; try{localStorage.setItem('ict-theme',t);}catch(e){} $('#themeBtn').textContent = t==='light'?'🌙':'☀️'; const mt=document.querySelector('meta[name=theme-color]'); if(mt) mt.content = t==='light'?'#f4f7fd':'#070b16'; try{ window.AndroidApp&&AndroidApp.setTheme&&AndroidApp.setTheme(t==='light'); }catch(e){} }
 let theme='dark'; try{ theme = localStorage.getItem('ict-theme') || (matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'); }catch(e){}
 setTheme(theme);
 const flipTheme = () => setTheme(document.documentElement.dataset.theme==='light'?'dark':'light');
 $('#themeBtn').onclick = flipTheme;
-$('#menuBtn').onclick = () => $('#nav').classList.toggle('open');
+if($('#menuBtn')) $('#menuBtn').onclick = () => $('#nav').classList.toggle('open');
 
 /* ---------- helpers ---------- */
 const sess = id => S.find(s=>s.id===+id);
@@ -40,6 +37,7 @@ function deck(s){
   d.push({type:'title', k:`Week ${s.week} · ${label(s)}`, h:s.title, p:s.sub, ic:s.ic, n:`Welcome. Today: ${s.title}. Connect to the previous session and say why it matters for psychology students.`});
   if(s.intro) d.push({type:'concept', k:'Introduction', h:'Why this matters', p:s.intro, ic:s.ic, n:'Start with the question or story. Let 2–3 students respond before moving on.'});
   d.push({type:'obj', k:'Learning objectives', h:'By the end of this session you will be able to…', pts:s.obj.map(o=>['🎯',o]), n:'Read the objectives aloud. Ask which one students already know something about.'});
+  if(s.bloom) d.push({type:'bloom', k:"Bloom's Taxonomy outcomes", h:'Head · Heart · Hand', bloom:s.bloom, n:'Head = what you will know (cognitive). Heart = what you will value (affective). Hand = what you will be able to do (psychomotor).'});
   s.slides.forEach(x=>d.push(Object.assign({type:'concept'},x)));
   if(s.mistakes) d.push({type:'mist', k:'Common mistakes', h:'Avoid these mistakes', pts:s.mistakes.map(m=>['⚠️',m]), n:'Ask: has anyone made one of these mistakes?'});
   if(s.lab) d.push({type:'lab', k:'Classroom activity', h:s.lab.t, pts:s.lab.steps.map((x,i)=>[(i+1)+'.',x]), n:'Give 15–20 minutes. Walk around and help. Ask 2–3 students to show their result.'});
@@ -66,10 +64,12 @@ function body(x){
   if(x.pts) html+=`<ul class="pts">${x.pts.map(p=>`<li><span class="ic">${p[0]}</span><span>${p[1]}</span></li>`).join('')}</ul>`;
   if(x.cmp) html+=`<div class="cmp">${x.cmp.map(c=>`<div><h4>${c[0]}</h4><ul>${c[1].map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}</div>`;
   if(x.ex) html+=`<div class="ex"><b>Example:</b> ${x.ex}</div>`;
+  if(x.code) html+=`<pre class="code">${x.code}</pre>`;
   if(x.psy) html+=`<div class="ex psy"><b>🧠 Psychology link:</b> ${x.psy}</div>`;
   if(x.tk) html+=`<div class="tk">${x.tk}</div>`;
   return html;
 }
+function bloomHTML(b){ return `<div class="bloom">${[['head','🧠','Head','Cognitive — know & think'],['heart','❤️','Heart','Affective — value & feel'],['hand','✋','Hand','Psychomotor — do & build']].filter(r=>b[r[0]]).map(r=>`<div class="bl ${r[0]}"><h4>${r[1]} ${r[2]} <small>${r[3]}</small></h4><ul>${b[r[0]].map(x=>`<li>${x}</li>`).join('')}</ul></div>`).join('')}</div>`; }
 function revealOnScroll(){
   const els=$$('.slideCard, .card, .scard, .wk, .ins-card', app);
   if(!('IntersectionObserver' in window)){ return; }
@@ -85,12 +85,12 @@ function instructorCard(){
     <span class="ins-kicker">Instructor</span>
     <h2 id="ins-name">Muhammad Tahir Mehmood</h2>
     <p class="ins-q">MPhil Computer Science</p>
-    <p class="ins-sum">More than 10 years of teaching experience in computer science. Course instructor for Applications of Information and Communication Technologies (ICT-1013), BS Psychology.</p>
+    <p class="ins-sum">More than 10 years of teaching Computer Science. Course instructor for Applications of Information and Communication Technologies (ICT-1013), BS Psychology.</p>
     <div class="ins-grid" aria-label="Instructor affiliations">
-      <div class="ins-role"><strong>Principal</strong><span>Government School</span></div>
-      <div class="ins-role"><strong>Visiting Lecturer</strong><span>Computer Science</span></div>
-      <div class="ins-role"><strong>Punjab College</strong><span>Okara</span></div>
-      <div class="ins-role"><strong>University of</strong><span>Okara</span></div>
+      <div class="ins-role"><strong>Lecturer</strong><span>University of Central Punjab, Okara</span></div>
+      <div class="ins-role"><strong>Headmaster</strong><span>GES 53/2-L, Okara</span></div>
+      <div class="ins-role"><strong>Asst. Director (P&amp;D)</strong><span>DEA Okara</span></div>
+      <div class="ins-role"><strong>10+ years</strong><span>Teaching Computer Science</span></div>
     </div></article>`;
 }
 const insBadge = `<span class="ins-badge"><img src="assets/instructor.webp" alt="" width="34" height="34">Muhammad Tahir Mehmood</span>`;
@@ -105,7 +105,7 @@ function home(){
     <h1>Applications of <span>Information &amp; Communication</span> Technologies</h1>
     <p class="lead">An animated, projector-ready course: 30 teaching sessions plus midterm and final exam preparation — from computer basics to productivity tools, ICT in education, health and finance, digital citizenship and ethics.</p>
     <div class="meta"><span class="chip">📅 16 weeks + final exam</span><span class="chip">🧑‍🏫 90-minute sessions</span><span class="chip">🎬 ${Object.keys(window.ICTDemos.list).length} animations</span><span class="chip">📝 4 quizzes · 4 assignments · project</span></div>
-    <div class="cta"><a class="btn pri" href="#/sessions">Open sessions →</a><a class="btn watch" href="#/w/1">▶ Watch Session 1</a><a class="btn" href="#/p/1/1">🖥 Present</a><a class="btn" href="#/assess">Assessments</a>${IS_APP?'':`<a class="btn" href="${APK_URL}">📱 Android app</a>`}</div>
+    <div class="cta"><a class="btn pri" href="#/sessions">Open sessions →</a><a class="btn watch" href="#/w/1">▶ Watch Session 1</a><a class="btn" href="#/p/1/1">🖥 Present</a><a class="btn" href="#/assess">Assessments</a></div>
   </div>
   <div class="orbit" aria-hidden="true"><div class="ring">${['💻','🌐','☁️','📧','📊','🩺','💳','🛡️'].map((e,k)=>{const a=k/8*2*Math.PI; return `<i style="left:${50+50*Math.cos(a)}%;top:${50+50*Math.sin(a)}%">${e}</i>`}).join('')}</div><div class="core">ICT</div></div>
   </div></section>
@@ -178,10 +178,11 @@ function study(id){
     <div class="top2" style="display:flex;gap:8px;flex-wrap:wrap">${kindChip(s)}<span class="chip">⏱ 90 minutes</span><span class="chip">LO ${s.lo.join(', ')}</span>${s.book?`<span class="chip">📚 ${esc(s.book)}</span>`:''}</div>
     <div style="margin-top:12px">${insBadge}</div>
     <div class="toolbar"><a class="btn pri" href="#/p/${s.id}/1">🖥 Present slides (${deck(s).length})</a><a class="btn watch" href="#/w/${s.id}">▶ Watch animated lecture</a><button class="btn" id="bm">${st.bm[s.id]?'🔖 Bookmarked':'🔖 Bookmark'}</button><button class="btn" id="done">${st.done[s.id]?'✔ Completed':'Mark as completed'}</button><button class="btn" onclick="print()">🖨 Print handout</button></div></div>
-    <div class="layout"><nav class="toc" aria-label="On this page"><b class="tiny">ON THIS PAGE</b>${s.intro?'<a href="#intro" data-jump>👋 Introduction</a>':''}<a href="#obj" data-jump>🎯 Objectives</a>${s.slides.map((x,i)=>`<a href="#c${i}" data-jump>${i+1}. ${esc(strip(x.h))}</a>`).join('')}${s.lab?'<a href="#lab" data-jump>🛠 Activity</a>':''}${s.disc?'<a href="#disc" data-jump>💬 Discussion</a>':''}<a href="#mist" data-jump>⚠️ Common mistakes</a><a href="#rev" data-jump>✔ Summary</a><a href="#quiz" data-jump>📝 Knowledge check</a>${s.assessment?'<a href="#assess" data-jump>📌 '+esc(s.assessment.title)+'</a>':''}${s.hw?'<a href="#hw" data-jump>🏠 Homework</a>':''}<a href="#terms" data-jump>📘 Key terms</a></nav>
+    <div class="layout"><nav class="toc" aria-label="On this page"><b class="tiny">ON THIS PAGE</b>${s.intro?'<a href="#intro" data-jump>👋 Introduction</a>':''}<a href="#obj" data-jump>🎯 Objectives</a>${s.bloom?'<a href="#bloom" data-jump>🌸 Head · Heart · Hand</a>':''}${s.slides.map((x,i)=>`<a href="#c${i}" data-jump>${i+1}. ${esc(strip(x.h))}</a>`).join('')}${s.lab?'<a href="#lab" data-jump>🛠 Activity</a>':''}${s.disc?'<a href="#disc" data-jump>💬 Discussion</a>':''}<a href="#mist" data-jump>⚠️ Common mistakes</a><a href="#rev" data-jump>✔ Summary</a><a href="#quiz" data-jump>📝 Knowledge check</a>${s.assessment?'<a href="#assess" data-jump>📌 '+esc(s.assessment.title)+'</a>':''}${s.hw?'<a href="#hw" data-jump>🏠 Homework</a>':''}<a href="#terms" data-jump>📘 Key terms</a></nav>
     <div>
       ${s.intro?`<div class="card" id="intro"><h2>👋 Introduction</h2><p class="muted" style="font-size:17px">${s.intro}</p></div><br>`:''}
       <div class="card obj" id="obj"><h2>🎯 Learning objectives</h2><ul>${s.obj.map(o=>`<li>${o}</li>`).join('')}</ul></div><br>
+      ${s.bloom?`<div class="card" id="bloom"><h2>🌸 Bloom's Taxonomy outcomes</h2>${bloomHTML(s.bloom)}</div><br>`:''}
       ${s.slides.map((x,i)=>`<section class="slideCard" id="c${i}"><div class="k">${esc(x.k||'Concept')} · ${i+1}/${s.slides.length}</div><h3>${x.ic?x.ic+' ':''}${x.h}</h3>${body(x)}${x.demo?`<div data-demo="${x.demo}"></div>`:''}</section>`).join('')}
       ${s.lab?`<div class="card lab" id="lab"><h2>🛠 ${esc(s.lab.t)}</h2><ol>${s.lab.steps.map(m=>`<li>${m}</li>`).join('')}</ol>${s.lab.out?`<p class="tiny"><b>Output:</b> ${s.lab.out}</p>`:''}</div><br>`:''}
       ${s.disc?`<div class="card" id="disc"><h2>💬 Discussion questions</h2><ol>${s.disc.map(m=>`<li>${m}</li>`).join('')}</ol></div><br>`:''}
@@ -194,11 +195,11 @@ function study(id){
       <div class="toolbar noprint" style="justify-content:space-between;margin-top:20px">${prev?`<a class="btn" href="#/s/${prev.id}">← ${esc(short(prev))}: ${esc(prev.title)}</a>`:'<span></span>'}${next?`<a class="btn pri" href="#/s/${next.id}">${esc(short(next))}: ${esc(next.title)} →</a>`:''}</div>
     </div></div></div>`;
   mountDemos(app);
-  wireChoices($('#quiz',app), {mcq:s.quiz}, (r,n)=>{ $('#score',app).textContent=`Score: ${r} / ${n} ${r===n?'🌟':''}`; st.quiz[s.id]=r+'/'+n; save(); });
-  const a=s.assessment; if(a && (a.mcq||a.tf)) wireChoices($('#assess',app), {mcq:a.mcq||[], tf:a.tf||[]}, (r,n)=>{ $('#ascore',app).textContent=`${a.title}: ${r} / ${n}`; st.quiz['a'+s.id]=r+'/'+n; save(); });
+  wireChoices($('#quiz',app), {mcq:s.quiz}, (r,n)=>{ $('#score',app).textContent=`Score: ${r} / ${n} ${r===n?'🌟':''}`; st.quiz[s.id]=r+'/'+n; save(); hook('onQuiz',s,r,n); });
+  const a=s.assessment; if(a && (a.mcq||a.tf)) wireChoices($('#assess',app), {mcq:a.mcq||[], tf:a.tf||[]}, (r,n)=>{ $('#ascore',app).textContent=`${a.title}: ${r} / ${n}`; st.quiz['a'+s.id]=r+'/'+n; save(); hook('onAssess',s,r,n); });
   $$('[data-jump]',app).forEach(x=>x.onclick=e=>{ e.preventDefault(); const t=$(x.getAttribute('href'),app); t&&t.scrollIntoView({behavior:'smooth'}); });
   $('#bm').onclick = () => { st.bm[s.id]?delete st.bm[s.id]:st.bm[s.id]=1; save(); $('#bm').textContent = st.bm[s.id]?'🔖 Bookmarked':'🔖 Bookmark'; };
-  $('#done').onclick = () => { st.done[s.id]?delete st.done[s.id]:st.done[s.id]=1; save(); $('#done').textContent = st.done[s.id]?'✔ Completed':'Mark as completed'; };
+  $('#done').onclick = () => { st.done[s.id]?delete st.done[s.id]:st.done[s.id]=1; save(); $('#done').textContent = st.done[s.id]?'✔ Completed':'Mark as completed'; hook('onDone',s,!!st.done[s.id]); };
 }
 
 /* ---------- presentation engine ---------- */
@@ -216,7 +217,7 @@ function buildPres(){
   <div class="pbody" id="pbody"></div><div class="notes" id="pnotes"></div>
   <div class="pfoot"><button class="btn sm" id="pPrev" aria-label="Previous slide">← Prev</button><span class="num" id="pnum"></span><button class="btn sm pri" id="pNext" aria-label="Next slide">Next →</button><button class="btn sm watch" id="pW" title="Play the whole deck like a video (W)">▶ Watch (W)</button><span class="spacer"></span><button class="btn sm hide-s" id="pOv">▦ Overview (O)</button><button class="btn sm" id="pN">📝 Notes (N)</button><a class="btn sm hide-s" href="#/s/${P.s.id}">📖 Study view</a></div>
   <div class="ov" id="pov"></div>`;
-  document.body.append(el); document.body.style.overflow='hidden';
+  document.body.append(el); document.body.style.overflow='hidden'; hook('onPres',true);
   $('#pPrev').onclick=()=>{ stopWatch(); go(-1); }; $('#pNext').onclick=()=>{ stopWatch(); go(1); }; $('#pW').onclick=toggleWatch;
   $('#pX').onclick=exitPres; $('#pFull').onclick=full; $('#pN').onclick=toggleNotes; $('#pOv').onclick=overview; $('#pTheme').onclick=flipTheme;
   let x0=null; el.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});
@@ -229,20 +230,30 @@ function renderSlide(dir){
   let inner='';
   if(x.type==='title'||x.type==='end'){
     inner=`<div class="two title"><div><div class="k">${x.k}</div><h2>${x.h}</h2><div class="p">${x.p}</div>${x.type==='title'?`<div style="margin-top:22px">${insBadge}</div>`:''}</div><div class="bigicon">${x.ic||'💡'}</div></div>`;
+  } else if(x.type==='bloom'){
+    inner=`<div class="k">${x.k}</div><h2>${x.h}</h2>${bloomHTML(x.bloom)}`;
   } else if(x.type==='quiz'){
     const q=x.q; inner=`<div class="k">${x.k}</div><h2 style="font-size:clamp(24px,3.2vw,48px)">${q.q}</h2><div class="quiz qs"><div class="qq">${q.o.map((o,j)=>`<button class="op" data-j="${j}">${String.fromCharCode(65+j)}. ${o}</button>`).join('')}<div class="why">💡 ${q.e}</div></div></div>`;
   } else {
     const vis = x.demo ? `<div data-demo="${x.demo}"></div>` : (x.ic && !x.pts && !x.cmp ? `<div class="bigicon">${x.ic}</div>` : '');
     const txt = `<div class="k">${esc(x.k||'Concept')}</div><h2>${x.ic&&!vis&&x.type==='concept'?x.ic+' ':''}${x.h}</h2>${body(x)}`;
-    inner = vis ? `<div class="two ${x.demo&&(x.pts||x.cmp)?'one':''}"><div>${txt}</div>${vis}</div>` : txt;
+    inner = vis ? `<div class="two ${x.demo&&(x.pts||x.cmp||x.code)?'one':x.demo?'wide':''}"><div>${txt}</div>${vis}</div>` : txt;
   }
   const b=$('#pbody'); b.innerHTML=`<div class="slide ${dir}">${inner}</div>`; b.scrollTop=0;
-  mountDemos(b);
+  mountDemos(b); fitSlide(); setTimeout(fitSlide,80);
   const qq=$('.qq',b); if(qq) qq.onclick=e=>{ const o=e.target.closest('.op'); if(!o||qq.classList.contains('done')) return; qq.classList.add('done'); $$('.op',qq)[x.q.a].classList.add('right'); if(+o.dataset.j!==x.q.a) o.classList.add('wrong'); };
   $('#pnotes').innerHTML=`<b>Presenter notes:</b> ${x.n||'—'}`; $('#pnotes').classList.toggle('show',P.notes);
   if(!$('#pov').classList.contains('show')) $('#pNext').focus({preventScroll:true});
   if(P.watch) scheduleWatch();
 }
+/* Fit-to-screen: shrink a slide that is taller than the stage so nothing is cut off (never below 60%; beyond that the stage scrolls). */
+function fitSlide(){
+  const b=$('#pbody'), sl=b&&$('.slide',b); if(!sl) return;
+  sl.style.zoom=''; const cs=getComputedStyle(b);
+  const avail=b.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom), need=sl.scrollHeight;
+  if(need>avail+2) sl.style.zoom=Math.max(0.6, (avail-4)/need).toFixed(3);
+}
+addEventListener('resize',()=>{ if(P) fitSlide(); });
 /* Watch mode: plays the deck like an animated video — animations auto-play, quizzes reveal, slides auto-advance. */
 function scheduleWatch(){
   clearTimeout(P.wt); clearTimeout(P.wt2);
@@ -250,7 +261,7 @@ function scheduleWatch(){
   let ms;
   if(x.type==='quiz'){ ms=11000; P.wt2=setTimeout(()=>{ const qq=$('.qq',b); if(qq&&!qq.classList.contains('done')) $$('.op',qq)[x.q.a].click(); },6500); }
   else if(demo&&demo._demo){ setTimeout(()=>demo._demo.play(),900); ms=900+demo._demo.n*2100+2600; }
-  else { const words=strip([x.h,x.p,(x.pts||[]).map(p=>p[1]).join(' '),(x.cmp||[]).map(c=>c[1].join(' ')).join(' '),x.ex,x.tk].join(' ')).split(/\s+/).length; ms=Math.min(16000,Math.max(5000,words*230)); }
+  else { const words=strip([x.h,x.p,x.code||'',x.bloom?Object.values(x.bloom).flat().join(' '):'',(x.pts||[]).map(p=>p[1]).join(' '),(x.cmp||[]).map(c=>c[1].join(' ')).join(' '),x.ex,x.tk].join(' ')).split(/\s+/).length; ms=Math.min(16000,Math.max(5000,words*230)); }
   P.wt=setTimeout(()=>{ if(!P||!P.watch) return; if(P.i>=P.d.length-1){ stopWatch(); return; } go(1); }, ms);
   const bar=$('#wbar'); if(bar){ bar.style.transition='none'; bar.style.width='0'; requestAnimationFrame(()=>requestAnimationFrame(()=>{ bar.style.transition=`width ${ms}ms linear`; bar.style.width='100%'; })); }
 }
@@ -259,18 +270,18 @@ function startWatch(){ if(!P) return; P.watch=true; $('#pW').textContent='⏸ Pa
 function stopWatch(){ if(!P||!P.watch) return; P.watch=false; clearTimeout(P.wt); clearTimeout(P.wt2); $('#pW').textContent='▶ Watch (W)'; $('#pW').classList.remove('on'); const w=$('.wbar'); if(w) w.remove(); }
 function go(dlt){ const j=P.i+dlt; if(j<0||j>=P.d.length) return; location.replace(`#/p/${P.s.id}/${j+1}`); }
 function jump(j){ location.replace(`#/p/${P.s.id}/${j}`); }
-function toggleNotes(){ P.notes=!P.notes; $('#pnotes').classList.toggle('show',P.notes); }
+function toggleNotes(){ P.notes=!P.notes; $('#pnotes').classList.toggle('show',P.notes); fitSlide(); }
 function full(){ if(document.fullscreenElement) document.exitFullscreen(); else if(document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(()=>{}); }
 function overview(){ const o=$('#pov'); if(o.classList.contains('show')){ o.classList.remove('show'); return; }
   o.innerHTML=`<div class="toolbar"><b style="font-family:var(--disp);font-size:20px">Slide overview</b><span style="flex:1"></span><button class="btn sm" id="ovx">Close (O)</button></div><div class="og">${P.d.map((x,k)=>`<button data-k="${k+1}" class="${k===P.i?'cur':''}"><small>${k+1} · ${esc(strip(x.k||''))}</small>${esc(strip(x.h||x.q&&x.q.q||''))}</button>`).join('')}</div>`;
   o.classList.add('show'); $('#ovx').onclick=overview; o.onclick=e=>{ const b=e.target.closest('[data-k]'); if(b){ o.classList.remove('show'); jump(+b.dataset.k); } };
   const cur=$('.cur',o); cur&&cur.focus(); }
 function exitPres(){ const id=P&&P.s.id; closePres(); location.hash = id?`#/s/${id}`:'#/'; }
-function closePres(keep){ if(P){ clearTimeout(P.wt); clearTimeout(P.wt2); } const el=$('#pres'); if(el) el.remove(); document.body.style.overflow=''; if(document.fullscreenElement && !keep) document.exitFullscreen().catch(()=>{}); P=null; }
+function closePres(keep){ if(P){ clearTimeout(P.wt); clearTimeout(P.wt2); } const el=$('#pres'); if(el) el.remove(); document.body.style.overflow=''; if(document.fullscreenElement && !keep) document.exitFullscreen().catch(()=>{}); if(P) hook('onPres',false); P=null; }
 let numBuf='';
 document.addEventListener('keydown', e=>{
   if(!P || e.ctrlKey || e.metaKey || e.altKey) return;
-  if(e.target.matches('input,textarea,select')) return;
+  if(e.target.matches && e.target.matches('input,textarea,select')) return;
   const demo=$('#pbody [data-demo]'); const k=e.key;
   if(k==='w'||k==='W'){ toggleWatch(); return; }
   if(['ArrowRight','PageDown',' ','ArrowLeft','PageUp','Home','End'].includes(k)) stopWatch();
@@ -303,7 +314,7 @@ function flash(){
   $('#fp').onclick=()=>{ i=(i-1+order.length)%order.length; draw(); }; $('#fnx').onclick=()=>{ i=(i+1)%order.length; draw(); };
   $('#fsh').onclick=()=>{ for(let a=order.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[order[a],order[b]]=[order[b],order[a]];} i=0; draw(); };
   $('#fs').onchange=e=>{ const v=+e.target.value; order=T.map((t,k)=>k).filter(k=>!v||T[k][2]===v); i=0; draw(); };
-  app._keys = e=>{ if(e.target.matches('select,input')) return; if(e.key===' '){e.preventDefault();$('#fc').classList.toggle('flip');} if(e.key==='ArrowRight') $('#fnx').click(); if(e.key==='ArrowLeft') $('#fp').click(); };
+  app._keys = e=>{ if(e.target.matches && e.target.matches('select,input')) return; if(e.key===' '){e.preventDefault();$('#fc').classList.toggle('flip');} if(e.key==='ArrowRight') $('#fnx').click(); if(e.key==='ArrowLeft') $('#fp').click(); };
   draw();
 }
 function assessView(){
@@ -331,7 +342,7 @@ function bookmarks(){
   <div class="card"><h3>Completed units</h3><div class="bar"><i style="width:${pct()}%"></i></div><p class="tiny">${S.filter(s=>st.done[s.id]).length} of ${S.length} units marked complete.</p></div><br>
   <div class="card"><h3>Quiz results</h3><div class="tblwrap"><table class="cal"><tr><th>Unit</th><th>Knowledge check</th><th>Assessment</th></tr>${S.filter(s=>st.quiz[s.id]||st.quiz['a'+s.id]).map(s=>`<tr><td><a href="#/s/${s.id}">${esc(short(s))}: ${esc(s.title)}</a></td><td>${st.quiz[s.id]||'—'}</td><td>${st.quiz['a'+s.id]||'—'}</td></tr>`).join('')||'<tr><td colspan="3" class="muted">No quizzes attempted yet.</td></tr>'}</table></div></div><br>
   <button class="btn" id="rst">Reset my progress</button></div>`;
-  $('#rst').onclick=()=>{ if(confirm('Reset all progress, bookmarks and quiz scores on this device?')){ st=blank(); save(); bookmarks(); } };
+  $('#rst').onclick=()=>{ if(confirm('Reset all progress, bookmarks and quiz scores on this device?')){ st=blank(); save(); hook('reset'); bookmarks(); } };
 }
 function notFound(){ app.innerHTML=`<div class="wrap shead"><h1>Page not found</h1><a class="btn" href="#/">Go home</a></div>`; }
 
@@ -343,12 +354,15 @@ function route(){
   if(h[0]==='w'){ present(h[1],1); history.replaceState(null,'',`#/p/${h[1]}/1`); startWatch(); return; }
   if(P) closePres();
   app._keys=null;
-  ({'':home, sessions:sessionsView, s:()=>study(h[1]), glossary, flash, outline, bookmarks, assess:assessView, revision}[h[0]]||notFound)();
+  const PR=(window.ICTPortal&&window.ICTPortal.routes)||{};
+  (Object.assign({'':home, sessions:sessionsView, s:()=>study(h[1]), glossary, flash, outline, bookmarks, assess:assessView, revision, tools:()=>window.ICTTools.render(app)},PR)[h[0]]||notFound)(h);
+  hook('afterRoute',h);
   revealOnScroll();
   $$('#nav a').forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#/'+h[0]));
   window.scrollTo(0,0);
 }
 document.addEventListener('keydown',e=>{ if(!P && app._keys) app._keys(e); });
+function hook(n,...a){ try{ const p=window.ICTPortal; if(p&&p[n]) return p[n](...a); }catch(e){ console.error(e); } }
+window.ICTApp = { deck, sessions:S, get st(){return st}, save, sess, label, short, esc, strip, pct, kindChip, instructorCard, flipTheme, setTheme, allTerms, mcqBlock, wireChoices, mountDemos, revealOnScroll, route, resetAll(){ st=blank(); save(); } };
 addEventListener('hashchange', route); route();
-window.ICTApp = { deck, sessions:S };
 })();
