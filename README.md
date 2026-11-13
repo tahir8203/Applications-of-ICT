@@ -9,6 +9,8 @@ Static site, no build step. Open `index.html` directly or serve the folder.
 Repository: https://github.com/tahir8203/Applications-of-ICT  
 Hosting: Vercel project `applications-of-ict` (every push to `main` deploys to production).
 
+> **Continuing this project?** Start with [docs/START-HERE.md](docs/START-HERE.md). It links the technical handoff ([docs/HANDOFF.md](docs/HANDOFF.md)), the full chat history ([docs/CHAT-HISTORY.md](docs/CHAT-HISTORY.md)) and the original course outline ([docs/course-outline](docs/course-outline/)).
+
 ## What's inside
 
 - **30 teaching sessions + Midterm unit (Week 9) + Final Exam unit (Week 17)** following the official calendar of activities.
@@ -73,6 +75,10 @@ assets/sessions/part1-4.js Course content as data (sessions, slides, quizzes, as
 assets/instructor.webp     Instructor photo
 docs/MASTER-PROMPT.md      Refined project brief
 docs/PROGRESS.md           Progress checklist
+docs/START-HERE.md         How to continue the project (read first)
+docs/HANDOFF.md            Full technical handoff
+docs/CHAT-HISTORY.md       Readable history of the chat that built the project
+docs/course-outline/       Original course outline
 android/                   Android app (offline WebView shell) and build script
 ```
 

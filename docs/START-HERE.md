@@ -1,59 +1,64 @@
-# START HERE: moving the ICT-1013 project to a new Claude account
+# START HERE: continuing the ICT-1013 project
 
-Everything for the **Applications of ICT (ICT-1013)** web portal and Android app is saved on this laptop. Nothing is stored only in the old Claude account.
+This repository holds **everything** needed to continue the **Applications of ICT (ICT-1013)** web portal and Android app: the code, the course outline, the full chat history and the technical handoff. Share this repository link with anyone (or any new Claude account) and they can start from here:
 
-## 1. What is saved, and where
+**https://github.com/tahir8203/Applications-of-ICT**
 
-| What | Location on this laptop |
+## 1. What is in this repository
+
+| What | Path |
 |---|---|
-| This guide | `D:\Fall 2026\ICT\START-HERE.md` |
-| Full technical handoff (links, structure, build steps, decisions) | `D:\Fall 2026\ICT\HANDOFF.md` (same file in the repo as `ict\docs\HANDOFF.md`) |
-| Readable history of the whole chat | `D:\Fall 2026\ICT\CHAT-HISTORY.md` |
-| Complete project with git history (website + Android app) | `D:\Fall 2026\ICT\ict\` |
-| Android app files | `D:\Fall 2026\ICT\ICT-1013_v2.0.0.apk` (latest) and `ICT-1013_v1.0.0.apk` |
-| Course outline (original) | `D:\Fall 2026\ICT\Applications of Information and Communication technologies.doc` |
-| Improved project prompt | `D:\Fall 2026\ICT\ict\docs\MASTER-PROMPT.md` |
-| Progress checklist | `D:\Fall 2026\ICT\ict\docs\PROGRESS.md` |
-| **Android signing key (private, never share or upload)** | `C:\Users\Hameed Computers\Documents\ICT-1013-Signing\` (`ict1013-release.jks` + `key.properties`) |
+| This guide | `docs/START-HERE.md` |
+| Full technical handoff (links, structure, build steps, decisions, version 2.0 notes) | `docs/HANDOFF.md` |
+| Readable history of the whole chat that built the project | `docs/CHAT-HISTORY.md` |
+| Original course outline | `docs/course-outline/ICT-1013 Course Outline.doc` |
+| Improved project prompt | `docs/MASTER-PROMPT.md` |
+| Progress checklist | `docs/PROGRESS.md` |
+| Website (static, no build step) | `index.html`, `assets/`, `manifest.webmanifest`, `sw.js` |
+| Course content as data | `assets/sessions/part1–4.js`, `assets/sessions/bloom.js` |
+| Android app source and build script | `android/` (see `android/README.md`) |
+| Signed APK files | GitHub **Releases** (not stored in the code): latest at https://github.com/tahir8203/Applications-of-ICT/releases/latest/download/ICT-1013.apk |
 
-**Back up the signing-key folder** to a USB drive or private cloud folder. Without it you can never publish an update that installs over the existing app.
+Live website: https://applications-of-ict.vercel.app (Vercel redeploys it on every push to `main`).
 
-Online copies (these do not depend on any Claude account):
-- Live website: https://applications-of-ict.vercel.app
-- GitHub repo: https://github.com/tahir8203/Applications-of-ICT
-- APK download (latest): https://github.com/tahir8203/Applications-of-ICT/releases/latest/download/ICT-1013.apk
-- Portfolio card: https://tahir-portfolio-teal.vercel.app/#teaching
+**Not in the repository, on purpose:** the Android signing key (`ict1013-release.jks` + `key.properties`). It is private and kept on the owner's laptop in `Documents\ICT-1013-Signing\` and in a personal backup. Without it, new APK versions cannot update the installed app. Never commit it.
 
-## 2. Set up the new Claude account
+## 2. Start working
 
-1. Sign in to the Claude desktop app with the new account and open the **Code** tab.
-2. Choose **`D:\Fall 2026\ICT\ict`** as the project folder (not a new empty folder).
-3. GitHub: the `gh` command on this laptop is already signed in as `tahir8203`, so pushing and releases keep working. If it asks, run `gh auth login`.
-4. Vercel: in the new account, connect the **Vercel** connector and approve access to the team *tahirs-projects*. This is needed only for Vercel dashboard tasks; normal updates deploy automatically when you push to GitHub.
-5. Build tools for the APK are already on this laptop: `C:\dev\jdk21` and `C:\dev\android-sdk`.
+**On the owner's laptop** the project is already at `D:\Fall 2026\ICT\ict`. Open that folder as the project.
 
-## 3. What to type in the first message to the new account
+**On any other computer:**
 
-Copy and paste this:
+```bash
+git clone https://github.com/tahir8203/Applications-of-ICT.git
+cd Applications-of-ICT
+python -m http.server 5173
+```
+
+Then open http://localhost:5173. Pushing to `main` needs write access to the repository; building a release APK needs JDK 17+, the Android SDK (platform 36) and the signing key (see `android/README.md`).
+
+## 3. What to tell a new Claude account
+
+Paste this as the first message, with the project folder open:
 
 ```text
 I am continuing my ICT-1013 course project from another Claude account.
-Before doing anything, read these files:
-1. D:\Fall 2026\ICT\START-HERE.md
-2. D:\Fall 2026\ICT\HANDOFF.md  (full technical details, especially sections 6, 9 and 11)
-3. D:\Fall 2026\ICT\CHAT-HISTORY.md  (what I asked for and what was done)
-The project is in D:\Fall 2026\ICT\ict (GitHub tahir8203/Applications-of-ICT, live at
-https://applications-of-ict.vercel.app, Android app package pk.edu.ict1013, now version 2.0.0).
+Repository: https://github.com/tahir8203/Applications-of-ICT
+Before doing anything, read in this repository:
+1. docs/START-HERE.md
+2. docs/HANDOFF.md  (full technical details, especially sections 6, 9 and 11)
+3. docs/CHAT-HISTORY.md  (what I asked for and what was done)
+Live site: https://applications-of-ict.vercel.app · Android app package pk.edu.ict1013, version 2.0.0.
 Summarise the current state in a few lines, then wait for my next instruction.
 ```
 
-Then give your new request, for example "add more animations to Session 12" or "build version 2.0.1 of the app".
+Account setup for the new account: GitHub access works through the `gh` command on the laptop (signed in as tahir8203). For tasks in the Vercel dashboard, connect the Vercel connector and approve the team *tahirs-projects*.
 
 ## 4. Current state (13 Nov 2026)
 
 - **Website:** Portal 2.0 is live. Student dashboard, bottom tab bar on phones, 32 units (30 sessions + Midterm + Final), 980 slides, 80 animations, Watch mode, Bloom's Taxonomy outcomes for every session, practice centre (quick quiz, timed mocks, phishing spotter, shortcut trainer, formula challenge, term match), web journey visualizer, 7 lab tools, 19 cheat sheets, 26 viva answers, badges, notes and offline install.
-- **Android app:** version 2.0.0 (versionCode 2), signed, published as GitHub release `v2.0.0`. It works offline and installs over 1.0.0.
-- **Portfolio:** the course is the first card in the Teaching section.
+- **Android app:** version 2.0.0 (versionCode 2), signed, published as GitHub release `v2.0.0`; works offline and installs over 1.0.0.
+- **Portfolio:** the course is the first card in the Teaching section of https://tahir-portfolio-teal.vercel.app.
 
 ## 5. Still to do
 
@@ -62,7 +67,7 @@ Then give your new request, for example "add more animations to Session 12" or "
 - Confirm the product facts flagged in presenter notes before class (wallet names, shop policies, free storage sizes).
 - Fullscreen on the classroom PC needs a real click; test it once.
 
-## 6. Rules the course follows (tell the new account to keep them)
+## 6. Rules the course follows
 
 - No invented official marks, grading weights or exam policies.
 - All people, banks, shops and messages in examples are fictional.
