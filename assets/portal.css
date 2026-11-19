@@ -278,6 +278,9 @@ kbd{display:inline-block;font-family:'JetBrains Mono',ui-monospace,Consolas,mono
 .msg{border-left:5px solid var(--pri)}
 .msgh{display:flex;gap:12px;align-items:flex-start;padding-bottom:12px;border-bottom:1px dashed var(--line)}.msgh small{display:block;color:var(--tx2);margin-top:2px}
 .msgb{font-size:17px;line-height:1.6;margin:14px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+@media (max-width:520px){#aiB .btn{flex:1 1 100%}}
+.demo table.sheet{background:none;border:0;border-radius:0;padding:0;width:auto;max-height:none;overflow:visible;transform:none;transition:none;box-shadow:none}
+.btn.warn2{border-color:color-mix(in srgb,var(--warn) 60%,var(--line));flex:1}.card.case{border-left:4px solid var(--cy)}.fxl{font-family:ui-monospace,Consolas,monospace;background:var(--bg2);border:1px solid var(--line);padding:8px 10px;border-radius:8px}
 .btn.bad2{border-color:color-mix(in srgb,var(--bad) 60%,var(--line));flex:1}.btn.ok2{border-color:color-mix(in srgb,var(--ok) 60%,var(--line));flex:1}
 .qwhy ul{margin:6px 0;padding-left:4px;list-style:none}.qwhy li{margin:3px 0}
 .shead .qzbar{margin-top:10px}

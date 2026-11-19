@@ -143,3 +143,13 @@ Modelled on the Compiler Construction portal (same code base). What changed:
 - **Android 2.0.0 (versionCode 2):** same package and signing key. Bridge `window.AndroidApp`: `print, isApp, haptic, setTheme, keepAwake, orient, share`. Splash = `res/drawable/splash.xml` + `drawable-nodpi/splash_logo.png`. Release tag `v2.0.0`.
 - Totals now: 32 units, **980 deck slides**, 80 animations, 19 cheat sheets, 26 viva answers, 14 phishing messages, 26 shortcuts, 7 lab tools.
 - Still to do: run the APK on a real phone; check "Install app" on the live site; confirm flagged product facts before class.
+
+## 12. Version 2.1 update (19 Nov 2026)
+
+- **New files:** `assets/sessions/extras.js` (loaded after bloom.js: adds one animated slide to 14 sessions and a `case:{t,scenario,qs,answers}` to one session per teaching week) and `assets/portal-ai.js` (loaded after portal-data.js: `ICTData.aiSheets`, `aiViva` (appended to `viva`), `aiGame`).
+- **14 new animations** in `assets/demos.js` (94 total), with a new `verdicts()` helper: chatbot (S2), aisearch (S3), chartmake (S5), cornell (S8), lmsdeadline (S11), sleeptrack (S13), healthdata (S14), raastqr (S15), refund (S16), twofa (S17), aiuse (S22), aicite (S23), ailabel (S24), voiceclone (S25).
+- **Case studies:** 15 (Sessions 1, 3, 5 … 29 = Weeks 1–8 and 10–16). Shown on the study page (📂 Case study, model answers in a fold-out), as a deck slide after Discussion (answers in presenter notes) and in Resources → 📂 Case studies.
+- **AI & psychology:** Resources → 🤖 AI & psychology (5 cheat sheets), 10 AI viva answers (36 in total), and the practice game `#/practice/ai` "Responsible AI use?" (8 random scenarios from 12; answers Responsible / Check the rule first / Not OK; best score in `ict-portal-v1` best.ai).
+- **Bug fixed:** the spreadsheet tables in demos used class `sheet`, which clashed with the portal pop-up style `.sheet` (Portal 2.0). Scoped reset `.demo table.sheet` added in `portal.css`.
+- Cache version is now `?v=21` / `ict-v21`. Totals: 32 units, **1,009 deck slides**, 94 animations.
+- Android: versionCode 3, versionName 2.1.0 (same package and key).

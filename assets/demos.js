@@ -974,5 +974,162 @@ D.presstructure = flow('Structure of a project presentation',
    '<b>Results:</b> findings, feedback or impact (using fictional/anonymous data).',
    '<b>Close:</b> limitations, ethical points (privacy, copyright), then questions.']);
 
+/* ================= Version 2.1 additions ================= */
+/* verdicts: tiles whose state per step is a string, one char per tile: o=on, g=good, b=bad, d=dim, .=plain */
+function verdicts(title, tiles, caps, states){
+  return { title, caps,
+    build(stage){ const row=h('div',{class:'row'}); const els=tiles.map(t=>{ const d=h('div',{class:'tile'},`<span class="e">${t[0]}</span><b>${t[1]}</b>${t[2]?'<small>'+t[2]+'</small>':''}`); row.append(d); return d; }); stage.append(row); return {els}; },
+    show(c,i){ const st=states[i]||''; const M={o:'on',g:'good',b:'bad',d:'dim'}; c.els.forEach((e,k)=>e.className='tile '+(M[st[k]]||'')); }};
+}
+
+/* S2: how an AI chatbot answers */
+D.chatbot = flow('How an AI chatbot answers a question',
+  [['⌨️','Your prompt','question + context'],['🧩','Tokens','words split into pieces'],['🔮','Prediction','most likely next word'],['📝','Draft answer','word after word'],['🔍','You verify','check facts & sources']],
+  ['A student asks: "Explain working memory in simple words." Watch what the chatbot does.',
+   'The <b>prompt</b> is the instruction you type. Clear prompts (topic, level, length) give better answers.',
+   'The text is split into small pieces called <b>tokens</b>. The model works with numbers, not with meanings the way a human does.',
+   'The model <b>predicts</b> the most likely next token from patterns it learned from huge amounts of text.',
+   'It repeats the prediction again and again, so the <b>answer</b> appears word by word. It sounds fluent, but fluent is not the same as correct.',
+   'Your job: <b>verify</b>. Chatbots can invent facts and references ("hallucinations"). Check the textbook or a reliable source before you use it.']);
+
+/* S3: AI summary at the top of search results */
+D.aisearch = choice('An AI summary in your search results','You search "Is caffeine good for memory?" An AI-written summary at the top gives a confident one-line answer. What should you do?',[
+  ['Copy the summary into your assignment — it is at the top, so it must be right','bad','Position does not prove accuracy. AI summaries can mix up sources or leave out important limits.'],
+  ['Open the sources it links to, check who wrote them and when, then read a peer-reviewed article','good','Correct. Treat the summary as a starting point and go to the original evidence.'],
+  ['Ignore all search results and ask a friend instead','bad','Friends are not a reliable research source either. Use the search, but evaluate it.'],
+  ['Use it only if it matches what you already believe','bad','That is confirmation bias. Check the evidence even when you agree with it.']]);
+
+/* S5: making a chart in Excel */
+D.chartmake = { title:'From a data table to a clear chart', caps:[
+  'Fictional data: average mood scores (1–10) of a study group over four days.',
+  '<b>Select the range</b> A1:B5 — the labels and the numbers together.',
+  '<b>Insert → Column chart.</b> Excel draws one bar for each day.',
+  'Add a <b>chart title</b> and an <b>axis title</b> so a reader knows what is measured.',
+  'Check that the <b>axis starts at 0</b>. A cut axis makes small differences look huge — a common way charts mislead.'],
+  build(s){
+    const data=[['Mon',5],['Tue',6],['Wed',4],['Thu',8]];
+    const w=h('div',{class:'row',style:'align-items:flex-end;gap:24px'});
+    w.innerHTML=`<table class="sheet"><tr><th></th><th>A</th><th>B</th></tr><tr><th>1</th><td class="c">Day</td><td class="c">Mood</td></tr>${data.map((d,k)=>`<tr><th>${k+2}</th><td class="c">${d[0]}</td><td class="c">${d[1]}</td></tr>`).join('')}</table>
+    <svg viewBox="0 0 300 220" style="max-width:320px" role="img" aria-label="Column chart of mood by day"><text class="ct hid fade" x="160" y="18" text-anchor="middle" font-size="14" font-weight="700">Average mood by day</text>
+    <line x1="40" y1="190" x2="290" y2="190" class="ln"/><line x1="40" y1="30" x2="40" y2="190" class="ln"/><text class="ax hid fade" x="14" y="110" font-size="11" transform="rotate(-90 14 110)" text-anchor="middle">Mood (1–10)</text><text class="z hid fade" x="34" y="194" font-size="11" text-anchor="end">0</text>
+    ${data.map((d,k)=>`<rect class="cbar" x="${60+k*58}" y="190" width="36" height="0" rx="4" fill="var(--cy)" data-v="${d[1]}" style="transition:all .8s"/><text x="${78+k*58}" y="206" font-size="11" text-anchor="middle">${d[0]}</text>`).join('')}</svg>`;
+    s.append(w); return {c:[...w.querySelectorAll('td.c')], bars:[...w.querySelectorAll('.cbar')], ct:w.querySelector('.ct'), ax:w.querySelector('.ax'), z:w.querySelector('.z')};
+  },
+  show(c,i){
+    c.c.forEach(td=>td.classList.toggle('on',i===1));
+    c.bars.forEach(b=>{ const v=+b.dataset.v, ht=i>=2?v*16:0; b.setAttribute('height',ht); b.setAttribute('y',190-ht); });
+    c.ct.classList.toggle('hid',i<3); c.ax.classList.toggle('hid',i<3); c.z.classList.toggle('hid',i<4);
+  }};
+
+/* S8: Cornell notes in a digital notebook */
+D.cornell = flow('The Cornell method in a digital notebook',
+  [['📝','Notes','main column in class'],['❓','Cues','questions & keywords'],['🧾','Summary','3 lines in your words'],['🏷️','Tags','#memory #week4'],['🔁','Review','self-test from cues']],
+  ['A popular note-taking method that works well in OneNote or Evernote.',
+   'During the lecture, write short <b>notes</b> in the main area: key ideas, examples, diagrams.',
+   'After class, add <b>cue questions</b> in a side column, e.g. "What is the difference between STM and LTM?"',
+   'Write a 2–3 line <b>summary</b> at the bottom in your own words — this is where real learning happens.',
+   'Add <b>tags</b> so you can find every note on one topic in seconds, across all notebooks.',
+   'Before the exam, cover the notes and answer the cue questions. This is <b>active recall</b>, one of the best-supported study strategies.']);
+
+/* S11: LMS upload trouble */
+D.lmsdeadline = choice('The LMS upload fails before the deadline','Your assignment is due at 11:59 p.m. At 11:50 the LMS shows "Upload failed". What is the best action?',[
+  ['Give up and explain in class next week','bad','Without evidence it is hard for the teacher to help you.'],
+  ['Screenshot the error with the time showing, try another browser or mobile data, and if it still fails email the file to the teacher before the deadline','good','Correct. Evidence plus an alternative submission on time shows good faith. Next time, submit well before the deadline.'],
+  ['Upload a blank file to "hold the place", then replace it later','bad','That is dishonest, and the blank file may be the one that gets graded.'],
+  ['Ask a classmate to submit it from their account using your login','bad','Never share login details or submit through another person\'s account.']]);
+
+/* S13: sleep tracking */
+D.sleeptrack = flow('How a wearable "measures" your sleep',
+  [['📳','Motion','accelerometer'],['❤️','Heart rate','optical sensor'],['🧮','Algorithm','pattern guess'],['📊','Sleep stages','an estimate'],['🩺','Use wisely','trend, not diagnosis']],
+  ['A fitness band says you slept 6 h 10 min with 1 h of deep sleep. How does it know?',
+   'An <b>accelerometer</b> notices when your wrist stops moving for a long time.',
+   'A light-based <b>heart-rate sensor</b> notices that your heart slows down during sleep.',
+   'An <b>algorithm</b> combines these signals and guesses when you were asleep or awake.',
+   'The "deep / light / REM" stages are <b>estimates</b>. Sleep laboratories measure stages properly with brain-wave recording (polysomnography).',
+   'Useful for spotting <b>trends</b> in your own habits. Worried about a pattern? Talk to a qualified professional — a device is not a diagnosis.']);
+
+/* S14: who sees your health data */
+D.healthdata = verdicts('Who should see your health app data?',
+  [['🙋','You','owner'],['👩‍⚕️','Your doctor','with consent'],['🏥','Clinic record','secure system'],['📣','Advertisers','selling data'],['👥','Class group','public sharing']],
+  ['Your symptoms, prescriptions and therapy notes are <b>sensitive personal data</b>.',
+   '<b>You</b> own your health information and can ask what is stored and why.',
+   'Your <b>doctor or psychologist</b> sees it when you agree (informed consent), in order to care for you.',
+   'The clinic keeps it in a <b>secure record</b> with passwords and access limits: confidentiality.',
+   'Some apps share data with <b>advertisers</b>. Read the privacy policy and app permissions before you sign up. 🚩',
+   'Never post another person\'s health details in a <b>group chat</b> — not even as a joke or a "case study". 🚩'],
+  ['.....','o....','go...','ggo..','gggb.','gggbb']);
+
+/* S15: paying by QR code */
+D.raastqr = flow('Paying a shop by QR code (instant payment)',
+  [['📷','Scan QR','in your own app'],['👀','Check name','is it the shop?'],['🔢','Amount','type carefully'],['🔐','Confirm','PIN in your app only'],['⚡','Instant','money moves in seconds'],['🧾','Receipt','save the ID']],
+  ['You buy books at a (fictional) shop that shows a QR code at the counter.',
+   'Open <b>your own</b> banking or wallet app and scan. Pakistan\'s instant payment system <b>Raast</b>, run by the State Bank of Pakistan, connects banks and wallets.',
+   'The app shows the receiver\'s <b>name</b>. If it is not the shop\'s name, stop. Fake QR stickers pasted over real ones are a known trick.',
+   'Type the <b>amount</b> and check it twice — 500 is not 5,000.',
+   'Confirm with your <b>PIN or fingerprint inside the app</b>. Never tell a PIN or OTP to anyone, including the shopkeeper.',
+   'The payment is <b>instant</b>: the shop sees it in seconds.',
+   'Keep the <b>transaction ID / receipt</b>. You need it if anything goes wrong.']);
+
+/* S17: two-factor authentication */
+D.twofa = verdicts('Two-factor authentication (2FA) stops a stolen password',
+  [['🔑','Password','something you know'],['📱','Code / app','something you have'],['✅','You sign in','both match'],['🦹','Attacker','has only the password'],['⛔','Blocked','no second factor']],
+  ['Leaked passwords are common. 2FA adds a second lock.',
+   'You type your <b>password</b>: factor 1, something you know.',
+   'The service asks for a <b>code</b> from an authenticator app or SMS, or a passkey on your phone: factor 2, something you have.',
+   'Both are correct, so <b>you get in</b>.',
+   'An <b>attacker</b> got your password from a data leak and tries to sign in…',
+   '…but has no access to your phone, so they are <b>blocked</b>. This only works if you never read the code out to anyone.'],
+  ['ddddd','oddd.','go...','ggg..','...o.','...bg']);
+
+/* S16: returns and refunds */
+D.refund = flow('Returning an item and getting a refund',
+  [['📜','Read policy','days, condition'],['📦','Unboxing video','proof'],['📲','Request','in the app'],['🚚','Send back','pickup or drop-off'],['🔍','Inspection','seller checks'],['💸','Refund','to wallet/card']],
+  ['Your (fictional) online order arrives with shoes in the wrong size.',
+   'Read the <b>return policy</b> first: how many days, what condition, who pays shipping. Policies differ by shop.',
+   'Record an <b>unboxing video</b> before opening the sealed parcel — strong evidence if something is wrong or missing.',
+   'Open a <b>return request</b> inside the official app or website — never through a "support agent" who messages you first.',
+   '<b>Send the item back</b> with its tags and box, and keep the courier receipt.',
+   'The seller <b>inspects</b> the item against the policy.',
+   'The <b>refund</b> goes to your wallet, card or account. Note how long it may take, and follow up with your order number.']);
+
+/* S22: is this AI use responsible? */
+D.aiuse = verdicts('Responsible or not? Five ways students use AI',
+  [['💡','Brainstorm','topic ideas'],['🔤','Grammar check','own writing'],['📄','Whole essay','submitted as own'],['🧑‍⚕️','Client notes','pasted into chatbot'],['❓','Explain a concept','then verify']],
+  ['Not every AI use is the same. Rule 1: <b>follow your teacher\'s policy</b> for each task.',
+   '<b>Brainstorming</b> research topics is usually fine — you still choose and develop the idea. ✅',
+   '<b>Grammar help</b> on your own writing is often allowed, but check the rule and disclose it if asked. ⚠️',
+   'Submitting an <b>AI-written essay as your own</b> is academic dishonesty. ❌',
+   'Pasting a <b>client\'s or participant\'s personal details</b> into a public chatbot breaks confidentiality. ❌',
+   'Asking AI to <b>explain a hard concept</b>, then checking it in your textbook, is a good learning use. ✅'],
+  ['.....','g....','go...','gob..','gobb.','gobbg']);
+
+/* S23: citing an AI tool in APA 7 */
+D.aicite = flow('Citing an AI tool in APA 7 style',
+  [['🏢','Author','the company'],['📅','(Year)','of the version'],['🤖','Tool name','in italics'],['🔢','(Version)','date or number'],['🏷️','[Description]','Large language model'],['🔗','URL','of the tool']],
+  ['If your teacher allows AI and you use its output, cite it. Example with a <b>fictional</b> tool:<br><i>Example AI Lab. (2026). StudyBot (Version 4) [Large language model]. https://studybot.example</i>',
+   '<b>Author:</b> the company that makes the tool (Example AI Lab.).',
+   '<b>Year</b> of the version you used, in brackets: (2026).',
+   '<b>Title:</b> the name of the tool, in italics: <i>StudyBot</i>.',
+   '<b>Version</b> in brackets, if known: (Version 4).',
+   '<b>Description</b> in square brackets: [Large language model].',
+   '<b>URL</b> of the tool. In the text: (Example AI Lab, 2026). Also explain how you used it and keep a copy of your prompts.']);
+
+/* S24: labelling AI-made content */
+D.ailabel = flow('Publishing content made with AI — honestly',
+  [['🎨','Create','AI image or text'],['✏️','Edit & check','facts, bias, errors'],['©️','Rights','tool terms, no real faces'],['🏷️','Label','"Made with AI"'],['📤','Publish','with credits']],
+  ['You make a poster about exam stress with an AI image generator.',
+   '<b>Create</b> a first version with the AI tool.',
+   '<b>Edit and check</b>: wrong facts, strange hands or garbled text, stereotypes in the image.',
+   'Check the tool\'s <b>terms of use</b>. Never make realistic images of real people without their consent.',
+   '<b>Label</b> it clearly, e.g. "Image created with an AI tool". Many platforms now ask for this too.',
+   '<b>Publish</b> with credits for any photos, data or quotes you used. Honesty builds trust.']);
+
+/* S25: voice-clone scam */
+D.voiceclone = choice('A voice note that sounds exactly like your cousin','A voice note arrives from an unknown number. It sounds exactly like your cousin: "I\'m in trouble, send 30,000 rupees to this wallet now, don\'t tell anyone." What do you do?',[
+  ['Send it quickly — it is clearly his voice','bad','AI can copy a voice from a few seconds of audio taken from social media. A familiar voice is no longer proof.'],
+  ['Don\'t reply. Call your cousin or a family member on the number you already have saved','good','Correct. Verify through a separate channel you already trust. Urgency + secrecy + money = red flags.'],
+  ['Send half to be safe','bad','Any amount sent to a scammer is lost. Verify first.'],
+  ['Reply with your cousin\'s CNIC number to prove you know him','bad','Never send identity numbers. It gives scammers even more information.']]);
+
 window.ICTDemos = { mount, list: D };
 })();

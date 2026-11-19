@@ -78,7 +78,7 @@ function afterRoute(h){
   document.body.classList.toggle('sub', !root); document.body.classList.toggle('homepg', k==='');
   const bb=$('#backBtn'); if(bb) bb.hidden=root;
   let title=TITLES[k]||'Applications of ICT'; if(k==='s'){ const s=A().sess(h[1]); if(s) title=A().label(s); }
-  if(k==='practice'&&h[1]) title=({quick:'Quick quiz',mid:'Midterm mock',final:'Final mock',phish:'Phishing spotter',keys:'Shortcut trainer',xl:'Formula challenge',match:'Term match'}[h[1]])||title;
+  if(k==='practice'&&h[1]) title=({quick:'Quick quiz',mid:'Midterm mock',final:'Final mock',phish:'Phishing spotter',keys:'Shortcut trainer',xl:'Formula challenge',match:'Term match',ai:'Responsible AI use?'}[h[1]])||title;
   const pt=$('#ptitle'); if(pt) pt.textContent=title;
   document.title=(k===''?'':title+' · ')+'Applications of ICT · ICT-1013';
   const me=$('#meBtn'); if(me) me.textContent=ps.name?ps.name.trim()[0].toUpperCase():'👤';
@@ -192,12 +192,13 @@ function home(){
 }
 
 /* ---------- PRACTICE ---------- */
-function practice(h){ const m=h[1]; if(m==='quick') return quickSetup(); if(m==='mid') return startExam('mid'); if(m==='final') return startExam('final'); if(m==='phish') return phishGame(); if(m==='keys') return keysQuiz(); if(m==='xl') return xlChallenge(); if(m==='match') return matchGame();
+function practice(h){ const m=h[1]; if(m==='quick') return quickSetup(); if(m==='mid') return startExam('mid'); if(m==='final') return startExam('final'); if(m==='phish') return phishGame(); if(m==='keys') return keysQuiz(); if(m==='xl') return xlChallenge(); if(m==='match') return matchGame(); if(m==='ai') return aiGame();
   const b=ps.best, c=ps.cnt;
   const cards=[['#/practice/quick','⚡','Quick quiz','10 random questions from any unit. Instant explanations.',b.quick!=null?`Best ${b.quick}/10`:'New'],
    ['#/practice/mid','📝','Midterm mock','20 questions from Weeks 1–8, 20 minutes.',b.mid!=null?`Best ${b.mid}/20`:'New'],
    ['#/practice/final','🎓','Final mock','25 questions from the whole course, 25 minutes.',b.final!=null?`Best ${b.final}/25`:'New'],
    ['#/practice/phish','🎣','Phishing spotter','Read a message and decide: suspicious or safe? All messages are fictional.',b.phish!=null?`Best ${b.phish}/8`:'New'],
+   ['#/practice/ai','🤖','Responsible AI use?','Read how a student uses AI and decide: responsible, check the rule first, or not OK.',b.ai!=null?`Best ${b.ai}/8`:'New'],
    ['#/practice/keys','⌨️','Shortcut trainer','10 quick questions on keyboard shortcuts for Windows and Office.',b.keys!=null?`Best ${b.keys}/10`:'New'],
    ['#/practice/xl','📊','Formula challenge','Work out what a spreadsheet formula returns for a small data table.',c.xl?`${c.xl} solved`:'New'],
    ['#/practice/match','🧩','Term match','Match six key terms to their meanings against the clock.',c.match?`${c.match} done`:'New'],
@@ -347,17 +348,36 @@ function journey(){
   build();
 }
 
+/* ---------- RESPONSIBLE AI GAME ---------- */
+function aiGame(){
+  const G=D().aiGame, order=shuffle(G.map((_,i)=>i)).slice(0,8), n=order.length, L=[['✅','Responsible','ok2'],['⚠️','Check the rule first','warn2'],['🚩','Not OK','bad2']]; let i=0, right=0;
+  const show=()=>{ const m=G[order[i]];
+    app().innerHTML=`<div class="wrap narrow"><div class="shead"><h1>🤖 Responsible AI use?</h1><p class="muted">Scenario ${i+1} of ${n}. Every person here is fictional. Decide first, then read the explanation.</p><div class="qzbar"><i style="width:${i/n*100}%"></i></div></div>
+     <div class="card msg"><p class="msgb">${esc(m.s)}</p>
+     <div class="toolbar" id="aiB">${L.map((l,k)=>`<button class="btn ${l[2]}" data-a="${k}">${l[0]} ${l[1]}</button>`).join('')}</div><div id="aiO"></div></div></div>`;
+    $$('#aiB button').forEach(b=>b.onclick=()=>{ const ok=+b.dataset.a===m.a; if(ok) right++; haptic(ok?10:30); $('#aiB').hidden=true;
+      $('#aiO').innerHTML=`<div class="qwhy"><p>${ok?'✅ <b>Correct.</b>':'❌ <b>Not quite.</b>'} Best answer: <b>${L[m.a][0]} ${L[m.a][1]}</b>.</p><p>${esc(m.why)}</p></div><div class="toolbar"><button class="btn pri" id="aiN">${i===n-1?'See result':'Next scenario →'}</button><a class="btn" href="#/sheets/ai">🤖 AI & psychology sheets</a></div>`;
+      $('#aiN').onclick=()=>{ i++; if(i>=n) finish(); else show(); }; $('#aiN').focus(); }); };
+  const finish=()=>{ const pc=Math.round(right/n*100); if(ps.best.ai==null||right>ps.best.ai) ps.best.ai=right; ps.cnt.ai=(ps.cnt.ai||0)+1; save(); if(right) addXP(right*4,`Responsible AI use ${right}/${n}`); if(pc>=80) confetti();
+    app().innerHTML=resultCard(pc,right,n,'Responsible AI use?','best '+ps.best.ai+'/'+n); $('#gAgain').onclick=aiGame; animate(app()); window.scrollTo(0,0); };
+  show();
+}
+
 /* ---------- RESOURCES ---------- */
 function sheets(h){
-  const d=D(), tab=h[1]||'sheets', tabs=[['sheets','📑 Cheat sheets'],['viva','🎤 Viva Q&A'],['today','🚀 ICT today'],['toolbox','🆘 Help & tools']];
+  const d=D(), tab=h[1]||'sheets', tabs=[['sheets','📑 Cheat sheets'],['ai','🤖 AI & psychology'],['cases','📂 Case studies'],['viva','🎤 Viva Q&A'],['today','🚀 ICT today'],['toolbox','🆘 Help & tools']];
   let body='';
-  if(tab==='viva') body=`<p class="muted">${d.viva.length} questions teachers ask in viva and short-answer papers. Say your answer aloud first, then open the model answer.</p><div class="toolbar"><button class="btn sm" id="vsh">🔀 Shuffle</button><button class="btn sm" id="vall">Open all</button></div><div id="vlist"></div>`;
+  const cases=window.ICTApp.sessions.filter(s=>s.case);
+  if(tab==='ai') body=`<p class="muted">How to use AI tools honestly and safely as a psychology student. Always follow your teacher's AI policy for each task.</p><div class="toolbar"><a class="btn pri" href="#/practice/ai">🤖 Play: Responsible AI use?</a><a class="btn" href="#/sheets/viva">🎤 AI viva questions</a></div>${d.aiSheets.map((s,i)=>`<details class="card sheetc" ${i===0?'open':''}><summary><span class="ti">${s.ic}</span><span class="grow"><b>${s.t}</b><small>${s.tag}</small></span><span class="chev">›</span></summary><div class="shb">${s.b}</div></details>`).join('')}`;
+  else if(tab==='cases') body=`<p class="muted">${cases.length} case studies, one for each teaching week. Read the scenario, discuss the questions in a group, then compare with the model answers on the session page. All people and organisations are fictional.</p><div class="grid g2">${cases.map((s,i)=>`<article class="card" style="--i:${i}"><div class="tiny">Week ${s.week} · ${esc(window.ICTApp.label(s))} · ${esc(s.title)}</div><h3>📂 ${esc(s.case.t)}</h3><p class="muted">${s.case.scenario}</p><a class="btn sm pri" href="#/s/${s.id}" data-case="${s.id}">Open case & answers →</a></article>`).join('')}</div>`;
+  else if(tab==='viva') body=`<p class="muted">${d.viva.length} questions teachers ask in viva and short-answer papers. Say your answer aloud first, then open the model answer.</p><div class="toolbar"><button class="btn sm" id="vsh">🔀 Shuffle</button><button class="btn sm" id="vall">Open all</button></div><div id="vlist"></div>`;
   else if(tab==='today') body=`<p class="muted">What has changed recently in the technologies this course covers, and what it means for you.</p><div class="grid g2">${d.modern.map((m,i)=>`<article class="card mod" style="--i:${i}"><div class="top2"><span class="ti">${m[0]}</span><div><h3>${m[1]}</h3><span class="chip">${m[3]}</span></div></div><p>${m[2]}</p></article>`).join('')}</div>`;
   else if(tab==='toolbox') body=`<div class="card"><h3>🆘 If something goes wrong</h3><p class="tiny">Calm, step-by-step actions. In an emergency, contact local emergency services first.</p>${d.safety.map((s,i)=>`<details class="sheetc inl" ${i===0?'open':''}><summary><span class="ti">${i+1}</span><span class="grow"><b>${esc(s[0])}</b></span><span class="chev">›</span></summary><div class="shb">${s[1]}</div></details>`).join('')}</div><br>
     <div class="grid g2"><div class="card"><h3>🧰 Free tools for psychology students</h3>${d.tools.map(t=>`<div class="uprow"><span class="grow"><b>${t[0]}</b><small>${t[1]}</small></span><span class="chip">${t[2]}</span></div>`).join('')}<p class="tiny">Product names belong to their owners and are listed for learning only. Features and prices can change.</p></div>
     <div><div class="card"><h3>📝 Exam tips</h3><ul>${d.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div><br><div class="card"><h3>📚 Books</h3><ul>${window.COURSE.books.concat(window.COURSE.refs).map(b=>`<li>${esc(b)}</li>`).join('')}</ul></div></div></div>`;
   else body=`<input class="search" id="shq" type="search" placeholder="Search the cheat sheets, e.g. shortcut, COUNTIF, phishing, APA…" aria-label="Search cheat sheets"><div class="toolbar"><button class="btn sm" id="shall">Open all</button><button class="btn sm" onclick="print()">🖨 Print</button></div><div id="shl">${d.sheets.map((s,i)=>`<details class="card sheetc" id="sh${i}" ${i===0?'open':''}><summary><span class="ti">${s.ic}</span><span class="grow"><b>${s.t}</b><small>${s.tag}</small></span><span class="chev">›</span></summary><div class="shb">${s.b}</div></details>`).join('')}</div>`;
   app().innerHTML=`<div class="wrap"><div class="shead"><h1>Resources</h1><div class="seg">${tabs.map(t=>`<a href="#/sheets${t[0]==='sheets'?'':'/'+t[0]}" class="${t[0]===tab?'on':''}">${t[1]}</a>`).join('')}</div></div>${body}</div>`;
+  if(tab==='cases') $$('[data-case]').forEach(a=>a.onclick=e=>{ e.preventDefault(); location.hash='#/s/'+a.dataset.case; setTimeout(()=>{ const t=$('#case'); t&&t.scrollIntoView({behavior:'smooth'}); },120); });
   if(tab==='viva'){ let order=d.viva.map((_,i)=>i), open=false; const draw=()=>{ $('#vlist').innerHTML=order.map((k,i)=>`<details class="card sheetc" ${open?'open':''}><summary><span class="ti">${i+1}</span><span class="grow"><b>${esc(d.viva[k][0])}</b></span><span class="chev">›</span></summary><div class="shb"><p>${esc(d.viva[k][1])}</p></div></details>`).join(''); };
     $('#vsh').onclick=()=>{ order=shuffle(order); draw(); }; $('#vall').onclick=()=>{ open=!open; $('#vall').textContent=open?'Close all':'Open all'; draw(); }; draw(); }
   if(tab==='sheets'){ $('#shq').oninput=e=>{ const q=e.target.value.toLowerCase().trim(); $$('.sheetc').forEach((el,i)=>{ const s=d.sheets[i], hit=!q||(s.t+' '+strip(s.b)).toLowerCase().includes(q); el.hidden=!hit; if(q&&hit) el.open=true; }); };
@@ -402,7 +422,7 @@ function copy(text,msg){ const done=()=>toast(msg||'Copied'); try{ if(navigator.
 /* ---------- global search ---------- */
 let sIndex=null;
 function buildIndex(){ const a=A(), d=D(), I=[];
-  [['#/','🏠','Home dashboard'],['#/sessions','📚','All sessions'],['#/practice','🎯','Practice centre'],['#/practice/quick','⚡','Quick quiz'],['#/practice/mid','📝','Midterm mock exam'],['#/practice/final','🎓','Final mock exam'],['#/practice/phish','🎣','Phishing spotter game'],['#/practice/keys','⌨️','Keyboard shortcut trainer'],['#/practice/xl','📊','Spreadsheet formula challenge'],['#/practice/match','🧩','Term match game'],['#/journey','🌐','Web journey visualizer: URL, DNS, HTTPS'],['#/tools','🧪','Lab tools: password, APA, search, statistics, binary, email'],['#/sheets','📑','Cheat sheets'],['#/sheets/viva','🎤','Viva questions and answers'],['#/sheets/today','🚀','ICT today: AI, passkeys, deepfakes, instant payments'],['#/sheets/toolbox','🆘','Help and tools: if something goes wrong, exam tips'],['#/flash','🃏','Flashcards'],['#/glossary','📘','Glossary'],['#/revision','🔁','Revision dashboard'],['#/assess','📝','Assessments'],['#/outline','🗓️','Course outline'],['#/me','👤','My profile, badges and settings']].forEach(p=>I.push({t:p[2],s:'Page',ic:p[1],h:p[0],w:3}));
+  [['#/','🏠','Home dashboard'],['#/sessions','📚','All sessions'],['#/practice','🎯','Practice centre'],['#/practice/quick','⚡','Quick quiz'],['#/practice/mid','📝','Midterm mock exam'],['#/practice/final','🎓','Final mock exam'],['#/practice/phish','🎣','Phishing spotter game'],['#/practice/keys','⌨️','Keyboard shortcut trainer'],['#/practice/xl','📊','Spreadsheet formula challenge'],['#/practice/match','🧩','Term match game'],['#/practice/ai','🤖','Responsible AI use game'],['#/sheets/ai','🤖','AI & psychology: prompting, citing AI, confidentiality, hallucinations'],['#/sheets/cases','📂','Case studies for every week'],['#/journey','🌐','Web journey visualizer: URL, DNS, HTTPS'],['#/tools','🧪','Lab tools: password, APA, search, statistics, binary, email'],['#/sheets','📑','Cheat sheets'],['#/sheets/viva','🎤','Viva questions and answers'],['#/sheets/today','🚀','ICT today: AI, passkeys, deepfakes, instant payments'],['#/sheets/toolbox','🆘','Help and tools: if something goes wrong, exam tips'],['#/flash','🃏','Flashcards'],['#/glossary','📘','Glossary'],['#/revision','🔁','Revision dashboard'],['#/assess','📝','Assessments'],['#/outline','🗓️','Course outline'],['#/me','👤','My profile, badges and settings']].forEach(p=>I.push({t:p[2],s:'Page',ic:p[1],h:p[0],w:3}));
   a.sessions.forEach(s=>{ I.push({t:a.label(s)+': '+s.title,s:'Week '+s.week+' · '+s.unit,ic:s.ic||'📖',h:'#/s/'+s.id,x:s.sub,w:3});
     s.slides.forEach((x,i)=>I.push({t:strip(x.h),s:a.short(s)+' · slide',ic:x.ic||'▫️',h:'#/s/'+s.id,j:'c'+i,x:strip((x.p||'')+' '+(x.pts||[]).map(p=>p[1]).join(' ')).slice(0,400),w:2}));
     if(s.assessment) I.push({t:s.assessment.title,s:'Assessment · Week '+s.week,ic:'📌',h:'#/s/'+s.id,j:'assess',w:2}); });

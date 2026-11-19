@@ -1,6 +1,6 @@
 /* Offline support for the ICT-1013 portal. Bump VERSION together with the ?v= number in index.html. */
-const VERSION = 'ict-v20';
-const CORE = ['./', 'index.html', 'manifest.webmanifest', 'assets/styles.css?v=20', 'assets/portal.css?v=20', 'assets/sessions/part1.js?v=20', 'assets/sessions/part2.js?v=20', 'assets/sessions/part3.js?v=20', 'assets/sessions/part4.js?v=20', 'assets/sessions/bloom.js?v=20', 'assets/demos.js?v=20', 'assets/tools.js?v=20', 'assets/portal-data.js?v=20', 'assets/portal.js?v=20', 'assets/app.js?v=20', 'assets/instructor.webp', 'assets/icons/icon-192.png'];
+const VERSION = 'ict-v21';
+const CORE = ['./', 'index.html', 'manifest.webmanifest', 'assets/styles.css?v=21', 'assets/portal.css?v=21', 'assets/sessions/part1.js?v=21', 'assets/sessions/part2.js?v=21', 'assets/sessions/part3.js?v=21', 'assets/sessions/part4.js?v=21', 'assets/sessions/bloom.js?v=21', 'assets/sessions/extras.js?v=21', 'assets/demos.js?v=21', 'assets/tools.js?v=21', 'assets/portal-data.js?v=21', 'assets/portal-ai.js?v=21', 'assets/portal.js?v=21', 'assets/app.js?v=21', 'assets/instructor.webp', 'assets/icons/icon-192.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim())); });
 self.addEventListener('fetch', e => {

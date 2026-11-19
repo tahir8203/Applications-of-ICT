@@ -1,6 +1,6 @@
 # Progress checklist — ICT-1013
 
-Status as of 2026-11-13 (portal version 2.0).
+Status as of 2026-11-19 (portal version 2.1).
 
 | Item | Built | Tested |
 |---|---|---|
@@ -26,8 +26,9 @@ Status as of 2026-11-13 (portal version 2.0).
 | Bloom's Taxonomy outcomes for Sessions 1–30 | ✅ | ✅ shown on study pages and as slides (deck now 980 slides) |
 | Installable web app (manifest + service worker) | ✅ | ⚠️ service worker only runs on the live https site; check "Install" once there |
 | Android app 2.0.0 (splash, haptics, theme-matched bars, share, rotate, smart back) | ✅ | ⚠️ built, signed and inspected; not yet run on a real phone |
+| Version 2.1 content: 14 new animations (94 total), 15 weekly case studies with model answers, AI & psychology unit (5 cheat sheets, 10 viva answers, Responsible AI use game) | ✅ | ✅ every unit, 512 slides of changed sessions and every new page opened at phone and desktop size, no errors |
 
 Notes
-- 980 slides in total across 32 units (auto-generated objectives, activity, summary and quiz slides included).
+- 1,009 slides in total across 32 units (auto-generated objectives, activity, summary and quiz slides included).
 - Product facts that change often (free storage sizes, wallet brands, platform features) are flagged for the instructor to confirm before class.
 - No official marks or grading weightage are invented anywhere.
